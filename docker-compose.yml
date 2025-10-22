@@ -1,33 +1,39 @@
-# docker-compose.yml
 version: '3.8'
 
 services:
   db:
     image: postgres:15
     environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "${BACKEND_EXTERNAL_PORT}:${BACKEND_PORT}"
     depends_on:
       - db
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      SERVER_PORT: ${BACKEND_PORT}
+      SPRING_APPLICATION_NAME: ${SPRING_APPLICATION_NAME}
 
   frontend:
     build: ./front
     ports:
-      - "3001:3000"
+      - "${FRONTEND_EXTERNAL_PORT}:${FRONTEND_PORT}"
     depends_on:
       - backend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
 
 volumes:
   postgres_data:
