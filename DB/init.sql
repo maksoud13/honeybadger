@@ -49,3 +49,19 @@ CREATE INDEX idx_daily_progress_date ON daily_progress(date);
 CREATE INDEX idx_habit_completion_daily_progress_id ON habit_completion(daily_progress_id);
 CREATE INDEX idx_user_settings_user_id ON user_settings(user_id);
 CREATE INDEX idx_habit_types_name ON habit_types(name);
+
+-- Seed data: Insert default habit types
+INSERT INTO habit_types (name, description, category, is_active) VALUES
+    ('prayer', 'Daily prayers completion', 'spiritual', true),
+    ('coding', 'Java/Spring learning and coding', 'professional', true),
+    ('job_search', 'LinkedIn and job applications', 'professional', true),
+    ('fitness', '30-day fitness challenge', 'health', true),
+    ('reading', 'Technical reading/studying', 'professional', true)
+ON CONFLICT (name) DO NOTHING;
+
+-- Seed data: Insert default user settings
+INSERT INTO user_settings (user_id, default_habits, timezone) VALUES
+    (1, '["prayer", "coding", "job_search", "fitness"]'::JSONB, 'Africa/Cairo')
+ON CONFLICT (user_id) DO UPDATE SET
+    default_habits = EXCLUDED.default_habits,
+    timezone = EXCLUDED.timezone;

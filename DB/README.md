@@ -4,7 +4,8 @@ This folder contains database initialization scripts for the Honeybadger project
 
 ## Files
 
-- **`init.sql`** - Main database initialization script that creates the schema and all tables
+- **`init.sql`** - Main database initialization script that creates the schema, all tables, and seeds default data
+- **`seed.sql`** - Separate seed data file (included in init.sql)
 
 ## Database Configuration
 
@@ -42,9 +43,25 @@ docker exec -it honeybadger-db psql -U postgres
 \i /docker-entrypoint-initdb.d/init.sql
 ```
 
+## Seed Data
+
+The database is automatically seeded with default data on initialization:
+
+### Habit Types
+- **prayer** - Daily prayers completion (spiritual)
+- **coding** - Java/Spring learning and coding (professional)
+- **job_search** - LinkedIn and job applications (professional)
+- **fitness** - 30-day fitness challenge (health)
+- **reading** - Technical reading/studying (professional)
+
+### User Settings
+- **User ID 1** - Default user with timezone set to `Africa/Cairo`
+- **Default Habits** - prayer, coding, job_search, fitness
+
 ## Notes
 
 - The script includes indexes for optimal query performance
 - All tables use timestamps with timezone support
 - Foreign key constraints are properly configured with CASCADE delete
 - The script is idempotent and safe to run multiple times
+- Seed data uses `ON CONFLICT` clauses to prevent duplicate key errors on re-runs
