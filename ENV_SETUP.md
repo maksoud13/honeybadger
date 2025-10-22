@@ -20,9 +20,10 @@ The root `.env` file contains all configuration values for your entire stack:
 # Database Configuration
 DB_HOST=db
 DB_PORT=5432
-DB_NAME=mydb
-DB_USER=myuser
-DB_PASSWORD=mypassword
+DB_NAME=honeybadger_DB
+DB_USER=maksoud
+DB_PASSWORD=123456
+DB_INIT_FIRST_RUN=true
 
 # Backend Configuration
 BACKEND_PORT=8080
@@ -66,9 +67,10 @@ All services (PostgreSQL, Backend, Frontend) will use the values from `.env`.
 |----------|---------|-------------|---------|
 | `DB_HOST` | PostgreSQL | Database host | `db` |
 | `DB_PORT` | PostgreSQL | Database port | `5432` |
-| `DB_NAME` | PostgreSQL | Database name | `mydb` |
-| `DB_USER` | PostgreSQL | Database user | `myuser` |
-| `DB_PASSWORD` | PostgreSQL | Database password | `mypassword` |
+| `DB_NAME` | PostgreSQL | Database name | `honeybadger_DB` |
+| `DB_USER` | PostgreSQL | Database user | `maksoud` |
+| `DB_PASSWORD` | PostgreSQL | Database password | `123456` |
+| `DB_INIT_FIRST_RUN` | PostgreSQL | Initialize database on first run | `true` |
 | `BACKEND_PORT` | Backend | Internal backend port | `8080` |
 | `BACKEND_EXTERNAL_PORT` | Docker | External backend port | `8080` |
 | `SPRING_JPA_HIBERNATE_DDL_AUTO` | Backend | Hibernate DDL mode | `update` |
@@ -101,6 +103,28 @@ You can create multiple `.env` files:
 
 Then run: `docker-compose --env-file .env.production up`
 
+## Database Initialization
+
+The database is automatically initialized on first run:
+
+1. The `DB_INIT_FIRST_RUN` flag in `.env` controls initialization
+2. Docker automatically runs `/DB/init.sql` when the PostgreSQL container starts
+3. This creates all required tables:
+   - `daily_progress` - Daily productivity tracking
+   - `habit_completion` - Individual habit completion records
+   - `user_settings` - User preferences and settings
+   - `habit_types` - Available habit definitions
+
+**To reinitialize the database:**
+
+```bash
+# Remove the existing volume
+docker-compose down -v
+
+# Restart with fresh database
+docker-compose up
+```
+
 ## Important Notes
 
 - **Never commit `.env` files** with sensitive data to version control
@@ -109,6 +133,7 @@ Then run: `docker-compose --env-file .env.production up`
 - Frontend `.env.local` is already in `.gitignore`
 - All environment variables are automatically passed to Docker services
 - Backend reads variables from both Docker environment and `application.properties`
+- Database initialization scripts are in the `DB/` folder
 
 ## Quick Reference: Changing Values
 
