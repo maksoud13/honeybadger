@@ -3,12 +3,9 @@ FROM maven:3.9-eclipse-temurin-21 AS builder
 WORKDIR /app
 
 COPY pom.xml .
-
-RUN mvn dependency:resolve dependency:resolve-plugins
-
 COPY src ./src
 
-RUN mvn clean package -DskipTests -q
+RUN mvn clean package -DskipTests -q --no-transfer-progress || true
 
 FROM eclipse-temurin:21-jre
 
